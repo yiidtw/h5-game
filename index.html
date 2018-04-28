@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<div style="display: block; margin:0 auto; text-align:center" width="792">
+    <span style="font-size: 1.5em;">Score: </span>
+    <span style="font-size: 1.8em" id="scoreBoard">0</span>
+</div>
+<canvas id="playground" width="792" height="572"
+    style="display: block; margin: 0 auto;">
+</canvas>
+<div style="font-size: 1.5em; border-radius: 5px; background-color: black; color: white;
+            text-align:center;width:110px; height: 40px; margin: 5px auto;" onclick="window.location.reload()">
+    Restart
+</div>
+
+<script>
+    window.onload=function() {
+        canvas = document.getElementById("playground");
+        ctx = canvas.getContext("2d");
+        document.addEventListener("keydown", _keyPress);
+        block_w = block_h = 20;
+        gap = 2;
+        delta = block_w + gap;
+        // tail = [tail,...,head]
+        start_x = 23;
+        start_y = 221;
+        trail = [{x:start_x, y:start_y}, 
+                 {x:start_x+1*delta, y:start_y},
+                 {x:start_x+2*delta, y:start_y},
+                 {x:start_x+3*delta, y:start_y},
+        ];
+        snake_color = "white";
+        playground_color = "#0095DD";
+        food_color = "red";
+        
+        // initial direction to the right as dx=1, dy=0
+        dx = current_dx = 1; 
+        dy = current_dy = 0;
+        game_flag = true;
+        food_x=1+delta*_random(0,Math.floor(canvas.width/delta)-1);
+        food_y=1+delta*_random(0,Math.floor(canvas.height/delta)-1);
+        setInterval(_game, 1000/10);
+    }
+    function _mod(n, m){
+        return (((n%m) + m) % m)
+    }
+    function _random(n, m){
+        // except in snake body
+        return Math.floor((Math.random() * m) + n)
+    }
+    function _game(){
+        // draw board
+        ctx.fillStyle = playground_color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = snake_color;
+        ctx.font = "10pt Courier";
+        ctx.fillText("classic game in HTML5 implementation by yeeede@gmail.com", 
+                    Math.floor(canvas.width*0.01),Math.floor(canvas.height*0.95));
+        // draw food
+        ctx.fillStyle = food_color;
+        ctx.fillRect(food_x, food_y, block_w, block_h);
+        
+        /* 
+           head = trail[trail.length-1]
+           new_x and nex_y equal the next step of snake
+           (dx, dy) must be orthogonal to (current_dx, current_dy), then to modify direction of snake
+        */
+        if (current_dx * dx + current_dy * dy == 0){
+            current_dx = dx;
+            current_dy = dy;
+        }
+        var new_x = _mod(trail[trail.length-1].x + current_dx*(gap+block_w), canvas.width);
+        var new_y = _mod(trail[trail.length-1].y + current_dy*(gap+block_h), canvas.height);
+        /* 
+           bump check: need not check head, head-1, head-2, and tail
+           it's impossible for head to bump into head itself and head-1 head-2
+           if next move is to bump into tail, as head move one step the tail would move one step as well
+        */
+        for(var i=1; i < trail.length-3 ; i++)
+            if(new_x == trail[i].x && new_y == trail[i].y)
+                game_flag = false;
+        // eat food or step forward
+        if (game_flag){
+            if( new_x == food_x && new_y == food_y){
+                trail.push({ x: food_x, y: food_y});
+                food_x=1+delta*_random(0,Math.floor(canvas.width/delta)-1);
+                food_y=1+delta*_random(0,Math.floor(canvas.height/delta)-1);
+                document.getElementById("scoreBoard").innerHTML = trail.length-4;
+            }else{
+                trail.push({ x: new_x, y: new_y});
+                trail.shift();
+            }
+        }
+        // draw snake
+        ctx.fillStyle = snake_color;
+        for(var i=0; i < trail.length; i++){
+            ctx.fillRect(trail[i].x, trail[i].y, block_w, block_h);
+        }
+    }
+    function _keyPress(event) {
+        switch(event.keyCode) {
+            case 37:
+            // left
+                dx = -1;dy = 0;
+                break;
+            case 38:
+            // up
+                dx = 0;dy = -1;
+                break;
+            case 39:
+            // right
+                dx = 1;dy = 0;
+                break;
+            case 40:
+            // down
+                dx = 0;dy = 1;
+                break;
+            case 32:
+                window.location.reload()
+                break;
+        }
+    }
+</script>

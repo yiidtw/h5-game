@@ -1,5 +1,5 @@
-## Js-Snake
-- [Play on laptop](https://yeeede.github.io/js-snake/)
+## h5-game 
+- [Play on laptop](https://yiidtw.github.io/h5-game/)
 
 ## Screenshot
 ![](https://i.imgur.com/D5lmgYa.png)

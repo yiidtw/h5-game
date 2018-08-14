@@ -2,7 +2,7 @@
 - [Play on laptop](https://yiidtw.github.io/h5-game/)
 
 ## Screenshot
-![](https://i.imgur.com/D5lmgYa.png)
+![](https://i.imgur.com/pU9kTG2.png)
 
 ## How to develop
 ```
